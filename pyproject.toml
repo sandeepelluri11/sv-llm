@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sv-llm"
+version = "0.1.0"
+description = "SV-LLM: an agentic, multi-agent LLM system for SoC security verification"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Sandeep Elluri" }]
+keywords = ["hardware-security", "soc", "llm", "agents", "langgraph", "verification"]
+dependencies = [
+  "langgraph>=0.2.60",
+  "langchain-core>=0.3.30",
+  "langchain-openai>=0.3.0",
+  "pydantic>=2.7",
+  "pyyaml>=6.0",
+  "typer>=0.12",
+  "rich>=13.7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.6", "numpy>=1.26"]
+finetune = [
+  "torch>=2.2",
+  "transformers>=4.44",
+  "peft>=0.12",
+  "datasets>=2.20",
+  "accelerate>=0.33",
+]
+
+[project.scripts]
+sv-llm = "sv_llm.cli:app"
+
+[project.urls]
+Repository = "https://github.com/sandeepelluri11/sv-llm"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sv_llm"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["typer.Argument", "typer.Option"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

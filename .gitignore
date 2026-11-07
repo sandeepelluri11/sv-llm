@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Runs
+report.md
+report.json
+reports/
+*.index.json
+*.meta.json
+finetune/data/
+finetune/adapters/
+
+# Environment
+.env
+.DS_Store
