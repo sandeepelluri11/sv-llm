@@ -1,0 +1,18 @@
+name: non-sticky-lock-register
+agent: vuln_detect
+tags: [lock, sticky, write-once, boot_done, debug_lock, ctrl]
+source: Pattern drawn from CWE-1231 (Improper Prevention of Lock Bit Modification)
+input: |
+  Spec: LOCK is write-once; once set it stays set until reset.
+  RTL:
+    always @(posedge clk or negedge rst_n)
+      if (!rst_n) lock_q <= 1'b0;
+      else if (wr_en && addr == ADDR_CTRL) lock_q <= wdata[0];
+output: |
+  {"findings": [
+    {"id": "F1", "threat_id": "T2", "title": "LOCK bit can be cleared after being set",
+     "severity": "high", "module": "ctrl_regs", "location": "lock_q assignment in CTRL write case",
+     "description": "lock_q is loaded directly from wdata[0] on every CTRL write, so a later write with bit0 = 0 clears the lock. The spec requires the bit to be sticky until reset.",
+     "cwe": "CWE-1231",
+     "recommendation": "Make the register set-only: lock_q <= lock_q | wdata[0];"}
+  ]}

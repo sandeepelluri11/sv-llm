@@ -1,0 +1,21 @@
+name: debug-port-key-exposure
+agent: threat_model
+tags: [debug, key, test, jtag, scan]
+source: Pattern drawn from CWE-1244 (Internal Asset Exposed to Unsafe Debug Access Level)
+input: |
+  The crypto block stores a 256-bit device key in KEY[0..7]. A debug interface exposes
+  internal registers for manufacturing test. Firmware sets DBG_DISABLE before releasing
+  the device to the field.
+output: |
+  {"threats": [
+    {"id": "T1", "title": "Device key read through debug interface after provisioning",
+     "category": "information disclosure", "asset": "KEY[0..7] register bank",
+     "entry_point": "debug interface register read-back",
+     "description": "If the debug path does not honour DBG_DISABLE, an attacker with physical access reads the device key after provisioning.",
+     "spec_refs": ["Security assets", "DBG_DISABLE"]},
+    {"id": "T2", "title": "DBG_DISABLE cleared by untrusted software",
+     "category": "tampering", "asset": "DBG_DISABLE bit",
+     "entry_point": "system bus write to the control register",
+     "description": "If DBG_DISABLE is not sticky, software running after boot can clear it and re-open the debug path.",
+     "spec_refs": ["DBG_DISABLE"]}
+  ]}

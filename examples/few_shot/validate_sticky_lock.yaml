@@ -1,0 +1,18 @@
+name: confirm-with-assertion
+agent: validate
+tags: [lock, sticky, write-once]
+source: Original
+input: |
+  Finding F1: LOCK bit can be cleared after being set (lock_q <= wdata[0] on CTRL writes).
+output: |
+  {"checks": [
+    {"finding_id": "F1", "name": "lock_is_sticky",
+     "sva": "assert property (@(posedge clk) disable iff (!rst_n) lock_q |=> lock_q);",
+     "description": "Once lock_q is high it must stay high on every following cycle until reset."}
+  ],
+  "verdicts": [
+    {"finding_id": "F1", "status": "confirmed",
+     "rationale": "The register is loaded unconditionally from wdata[0]; a write of 0 after a write of 1 violates the sticky requirement, and the assertion above fails on that trace."}
+  ],
+  "needs_revision": false,
+  "revision_notes": ""}

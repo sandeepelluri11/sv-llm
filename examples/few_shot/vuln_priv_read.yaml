@@ -1,0 +1,16 @@
+name: privilege-check-missing-on-read
+agent: vuln_detect
+tags: [priv, privileged, read, rdata, access]
+source: Pattern drawn from CWE-1262 (Improper Access Control for Register Interface)
+input: |
+  Spec: Reads from the SECRET register always return zero.
+  RTL:
+    ADDR_SECRET: rdata = priv ? secret_q : 32'h0;
+output: |
+  {"findings": [
+    {"id": "F1", "threat_id": null, "title": "SECRET readable by privileged masters",
+     "severity": "high", "module": "regs", "location": "read mux, ADDR_SECRET arm",
+     "description": "The spec defines SECRET as write-only for every master, but the read mux returns the stored value whenever priv is high. Any privileged software, including a compromised driver, can exfiltrate the secret.",
+     "cwe": "CWE-1262",
+     "recommendation": "Return 32'h0 unconditionally for the SECRET address."}
+  ]}
